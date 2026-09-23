@@ -1,0 +1,304 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  
+  --color-aerofoil: #0284c7;
+  --color-dynamic-cyan: #06b6d4;
+  --color-supersonic-violet: #8b5cf6;
+  --color-laminar-emerald: #10b981;
+  --color-thermal-amber: #f59e0b;
+  --color-stagnation-crimson: #ef4444;
+}
+
+@layer base {
+  * {
+    border-color: #e2e8f0;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html, body, #root {
+    min-height: 100%;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+  }
+
+  button, a {
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  /* Ensure inputs are legible and don't trigger unwanted auto-zoom on iOS */
+  input, select, textarea {
+    font-size: 16px;
+  }
+  @media (min-width: 640px) {
+    input, select, textarea {
+      font-size: inherit;
+    }
+  }
+}
+
+/* Safe area support for iOS notches and dynamic islands */
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.pl-safe {
+  padding-left: env(safe-area-inset-left, 0px);
+}
+.pr-safe {
+  padding-right: env(safe-area-inset-right, 0px);
+}
+
+/* Custom scrollbar for technical workbench */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Bright Aerodynamic Luminous Background Themes */
+.theme-bg-sky-aero {
+  background: linear-gradient(135deg, #bae6fd 0%, #e0f2fe 30%, #f0fdfa 60%, #cffafe 85%, #e0f2fe 100%);
+}
+
+.theme-bg-electric-azure {
+  background: linear-gradient(135deg, #7dd3fc 0%, #bae6fd 30%, #e0f2fe 60%, #a5f3fc 85%, #f0f9ff 100%);
+}
+
+.theme-bg-solar-amber {
+  background: linear-gradient(135deg, #fde68a 0%, #fef3c7 30%, #fffbeb 55%, #fed7aa 80%, #fef08a 100%);
+}
+
+.theme-bg-radiant-coral {
+  background: linear-gradient(135deg, #fecdd3 0%, #ffe4e6 30%, #fff1f2 55%, #fed7aa 80%, #bae6fd 100%);
+}
+
+.theme-bg-aurora-emerald {
+  background: linear-gradient(135deg, #a7f3d0 0%, #d1fae5 30%, #ecfdf5 55%, #99f6e4 80%, #bae6fd 100%);
+}
+
+.theme-bg-lavender-breeze {
+  background: linear-gradient(135deg, #ddd6fe 0%, #ede9fe 30%, #f5f3ff 55%, #c7d2fe 80%, #bae6fd 100%);
+}
+
+/* Radiant card shadow with subtle colorful ambient lift */
+.card-bright {
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 4px 20px -2px rgba(2, 132, 199, 0.07), 0 2px 6px -1px rgba(0, 0, 0, 0.03);
+}
+
+.card-bright:hover {
+  box-shadow: 0 10px 28px -4px rgba(2, 132, 199, 0.12), 0 4px 10px -2px rgba(0, 0, 0, 0.04);
+}
+
+/* Cinematic Loop Video Background Animations */
+@keyframes cfdVideoKenBurns {
+  0% {
+    transform: scale(1.05) translate3d(0%, 0%, 0) rotate(0.001deg);
+  }
+  25% {
+    transform: scale(1.12) translate3d(-1.8%, -1.2%, 0) rotate(0.08deg);
+  }
+  50% {
+    transform: scale(1.08) translate3d(1.5%, -1.6%, 0) rotate(-0.06deg);
+  }
+  75% {
+    transform: scale(1.13) translate3d(-1.0%, 1.4%, 0) rotate(0.04deg);
+  }
+  100% {
+    transform: scale(1.05) translate3d(0%, 0%, 0) rotate(0.001deg);
+  }
+}
+
+@keyframes cfdStreamlinePulse {
+  0% {
+    stroke-dashoffset: 200;
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.75;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0.35;
+  }
+}
+
+@keyframes cfdScanlineSweep {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+.animate-video-loop {
+  animation: cfdVideoKenBurns 28s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.animate-video-loop-paused {
+  animation-play-state: paused !important;
+}
+
+.animate-streamline {
+  animation: cfdStreamlinePulse 12s linear infinite;
+}
+
+.animate-scanline {
+  animation: cfdScanlineSweep 8s linear infinite;
+}
+
+/* Aerodynamic Color Effects & Animations */
+@keyframes aeroGlowPulse {
+  0%, 100% {
+    box-shadow: 0 0 15px -3px rgba(2, 132, 199, 0.25), 0 0 6px -1px rgba(6, 182, 212, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 25px 2px rgba(2, 132, 199, 0.45), 0 0 14px 2px rgba(6, 182, 212, 0.55);
+  }
+}
+
+@keyframes conicAeroRotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes laserDrift {
+  0% {
+    transform: translateX(-100%) scaleY(1);
+    opacity: 0.1;
+  }
+  40% {
+    opacity: 0.85;
+  }
+  60% {
+    opacity: 0.85;
+  }
+  100% {
+    transform: translateX(200%) scaleY(1);
+    opacity: 0.1;
+  }
+}
+
+@keyframes rippleShockwave {
+  0% {
+    transform: scale(0.1);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(3.5);
+    opacity: 0;
+  }
+}
+
+@keyframes gradientShiftX {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.aero-pulse-glow {
+  animation: aeroGlowPulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-laser-drift {
+  animation: laserDrift 4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.animate-gradient-x {
+  background-size: 200% 200%;
+  animation: gradientShiftX 6s ease infinite;
+}
+
+.shockwave-ripple {
+  animation: rippleShockwave 0.85s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+}
+
+/* Aerodynamic Gradient Borders */
+.aero-conic-border {
+  position: relative;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.aero-conic-border::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(
+    transparent,
+    rgba(6, 182, 212, 0.7),
+    rgba(99, 102, 241, 0.8),
+    rgba(14, 165, 233, 0.9),
+    transparent 65%
+  );
+  animation: conicAeroRotate 5s linear infinite;
+  z-index: -2;
+}
+
+.aero-conic-border::after {
+  content: '';
+  position: absolute;
+  inset: 1.5px;
+  background: inherit;
+  border-radius: inherit;
+  z-index: -1;
+}
+
+/* Color Presets for Aerodynamic Telemetry */
+.text-aero-cyan {
+  color: #06b6d4;
+  text-shadow: 0 0 10px rgba(6, 182, 212, 0.4);
+}
+
+.text-aero-violet {
+  color: #8b5cf6;
+  text-shadow: 0 0 10px rgba(139, 92, 246, 0.4);
+}
+
+.text-aero-amber {
+  color: #f59e0b;
+  text-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
+}
+
+.text-aero-emerald {
+  color: #10b981;
+  text-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+}
+
+

@@ -1,0 +1,68 @@
+{
+  "entities": {
+    "userProfile": {
+      "title": "User Profile",
+      "description": "User profile with display name, email, and authentication provider details",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "maxLength": 128 },
+        "displayName": { "type": "string", "maxLength": 128 },
+        "email": { "type": "string", "format": "email", "maxLength": 256 },
+        "photoURL": { "type": "string", "maxLength": 1024 },
+        "authProvider": { "type": "string", "maxLength": 64 },
+        "createdAt": { "type": "string", "maxLength": 64 },
+        "updatedAt": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["userId", "email"]
+    },
+    "cfdProject": {
+      "title": "CFD Project",
+      "description": "Aerodynamic computational fluid dynamics study configuration",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "title": { "type": "string", "maxLength": 128 },
+        "description": { "type": "string", "maxLength": 512 },
+        "geometryType": { "type": "string", "maxLength": 64 },
+        "solver": { "type": "string", "maxLength": 64 },
+        "status": { "type": "string", "maxLength": 64 },
+        "meshCellCount": { "type": "number" },
+        "createdAt": { "type": "string", "maxLength": 64 },
+        "updatedAt": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["id", "userId", "title"]
+    },
+    "simulationRun": {
+      "title": "Simulation Run",
+      "description": "OpenFOAM solver execution record with convergence data and aerodynamic coefficients",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "projectId": { "type": "string", "maxLength": 128 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "status": { "type": "string", "maxLength": 64 },
+        "iterations": { "type": "number" },
+        "cl": { "type": "number" },
+        "cd": { "type": "number" },
+        "createdAt": { "type": "string", "maxLength": 64 },
+        "updatedAt": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["id", "projectId", "userId", "status"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "userProfile",
+      "description": "Individual authenticated user settings and profile metadata"
+    },
+    "/projects/{projectId}": {
+      "schema": "cfdProject",
+      "description": "User CFD engineering study projects and geometry configurations"
+    },
+    "/simulations/{simId}": {
+      "schema": "simulationRun",
+      "description": "CFD solver run executions, convergence history, and aerodynamic coefficients"
+    }
+  }
+}
