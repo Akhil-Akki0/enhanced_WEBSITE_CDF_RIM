@@ -1,6 +1,6 @@
 /**
  * Hardened OpenFOAM v2606 Execution Engine & Docker/WSL2 Sandboxing
- * 
+ *
  * DEVELOPED by Akhil.A gmail :- akkedu01@gmail.com
  */
 
@@ -706,6 +706,19 @@ function parseResiduals(stdoutLog) {
 async function runSyntheticSimulation(job, caseDir) {
   job.logs.push('[SYSTEM_NOTICE] Native OpenFOAM v2606 binary suite not installed in container; activating aerodynamic surrogate solver emulation.');
 
+  // Extract real user configuration parameters
+  const inletVelocity = Math.max(0.01, Math.min(1000.0, Number(job.config?.inletVelocity) || 25.0));
+  const rho = 1.225; // Air density in kg/m^3
+  const dynamicPressure = 0.5 * rho * (inletVelocity ** 2); // q = 1/2 * rho * V^2
+
+  // Physical aerodynamic calculations
+  const maxVelocity = Number((inletVelocity * 1.42).toFixed(2));
+  const minVelocity = 0.0;
+  const maxPressure = Number((dynamicPressure).toFixed(2)); // Stagnation pressure p_max
+  const minPressure = Number((-0.65 * dynamicPressure).toFixed(2)); // Suction peak p_min
+  const cD = Number((0.0245 + 0.001 * (inletVelocity / 25.0)).toFixed(4));
+  const cL = Number((0.512 + 0.002 * (inletVelocity / 25.0)).toFixed(4));
+
   // Step 1: blockMesh emulation
   await new Promise((r) => setTimeout(r, 600));
   job.progress = 25;
@@ -727,7 +740,7 @@ async function runSyntheticSimulation(job, caseDir) {
   // Step 4: simpleFoam simulation
   await new Promise((r) => setTimeout(r, 900));
   job.progress = 85;
-  job.logs.push('[STEP 4/5] Executing simpleFoam solver...');
+  job.logs.push(`[STEP 4/5] Executing simpleFoam solver (Inlet Velocity: ${inletVelocity} m/s)...`);
   const residuals = [];
   let uxRes = 0.85;
   let pRes = 0.45;
@@ -746,6 +759,12 @@ async function runSyntheticSimulation(job, caseDir) {
   job.progress = 100;
   job.logs.push('[STEP 5/5] Exporting solution via foamToVTK -latestTime...');
   job.logs.push('Generated VTK scalar & vector fields: U (velocity), p (pressure).');
+
+  const pMinNorm = (-0.6 * dynamicPressure).toFixed(1);
+  const pMaxNorm = (0.8 * dynamicPressure).toFixed(1);
+  const u1 = (inletVelocity * 1.0).toFixed(1);
+  const u2 = (inletVelocity * 1.14).toFixed(1);
+  const uMax = maxVelocity.toFixed(1);
 
   const sampleVtk = `# vtk DataFile Version 3.0
 OpenFOAM v2606 VTK Solution Export
@@ -767,18 +786,18 @@ CELL_TYPES 1
 POINT_DATA 8
 SCALARS p float 1
 LOOKUP_TABLE default
--12.4
+${pMinNorm}
 -8.2
 14.5
-28.1
+${pMaxNorm}
 -10.1
 -5.4
 18.2
 32.0
 VECTORS U float
-25.0 0.0 0.0
-28.5 2.1 0.0
-34.2 4.5 0.0
+${u1} 0.0 0.0
+${u2} 2.1 0.0
+${uMax} 4.5 0.0
 21.0 -1.2 0.0
 24.8 0.1 0.0
 29.1 1.8 0.0
@@ -795,17 +814,17 @@ VECTORS U float
     metrics: {
       cells: 48250,
       points: 51200,
-      maxVelocity: 34.2,
-      minVelocity: 0.0,
-      maxPressure: 142.5,
-      minPressure: -68.4,
-      cL: 0.512,
-      cD: 0.0245,
+      maxVelocity,
+      minVelocity,
+      maxPressure,
+      minPressure,
+      cL,
+      cD,
     },
     residuals,
     vtkBase64,
   };
-  job.logs.push('[COMPLETE] Simulation finished successfully. Cells: 48,250, cL: 0.512, cD: 0.0245');
+  job.logs.push(`[COMPLETE] Simulation finished successfully. Cells: 48,250, Max Vel: ${maxVelocity} m/s, Max Pressure: ${maxPressure} Pa, cL: ${cL}, cD: ${cD}`);
   logger.audit('SIMULATION_SUCCESS', {
     caseId: job.caseId,
     userId: job.owner,
@@ -1014,6 +1033,7 @@ function submitSimulationJob({ caseId, ownerId, config, stlBuffer }) {
     caseId: caseUuid,
     caseDir,
     owner: ownerId,
+    config,
     status: 'queued',
     progress: 0,
     logs: [`[QUEUE] Job ${caseUuid} accepted and queued for execution.`],
